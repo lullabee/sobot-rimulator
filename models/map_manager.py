@@ -18,11 +18,20 @@ GOAL_MIN_DIST = 2.0  # meters
 GOAL_MAX_DIST = 4.0  # meters
 MIN_GOAL_CLEARANCE = 0.2  # meters
 
+def generateGoal():
+    # generate the goal
+    goal_dist_range = GOAL_MAX_DIST - GOAL_MIN_DIST
+    dist = GOAL_MIN_DIST + (random() * goal_dist_range)
+    phi = -pi + (random() * 2 * pi)
+    x = dist * sin(phi)
+    y = dist * cos(phi)
+    return [x,y]
 
 class MapManager:
     def __init__(self):
         self.current_obstacles = []
         self.current_goal = None
+        self.current_goals = []
 
     def random_map(self, world):
         # OBSTACLE PARAMS
@@ -34,18 +43,17 @@ class MapManager:
         obs_min_dist = OBS_MIN_DIST
         obs_max_dist = OBS_MAX_DIST
 
-        # GOAL PARAMS
-        goal_min_dist = GOAL_MIN_DIST
-        goal_max_dist = GOAL_MAX_DIST
-
         # BUILD RANDOM ELEMENTS
-        # generate the goal
-        goal_dist_range = goal_max_dist - goal_min_dist
-        dist = goal_min_dist + (random() * goal_dist_range)
-        phi = -pi + (random() * 2 * pi)
-        x = dist * sin(phi)
-        y = dist * cos(phi)
-        goal = [x, y]
+
+        goal = generateGoal()
+
+        goals = []
+        goals.append(generateGoal())
+        goals.append(generateGoal())
+        goals.append(generateGoal())
+        print(goal)
+
+        print(goals)
 
         # generate a proximity test geometry for the goal
         r = MIN_GOAL_CLEARANCE
@@ -53,7 +61,7 @@ class MapManager:
         goal_test_geometry = []
         for i in range(n):
             goal_test_geometry.append(
-                [x + r * cos(i * 2 * pi / n), y + r * sin(i * 2 * pi / n)]
+                [goal[0] + r * cos(i * 2 * pi / n), goal[1] + r * sin(i * 2 * pi / n)]
             )
         goal_test_geometry = Polygon(goal_test_geometry)
 
@@ -96,6 +104,7 @@ class MapManager:
         # update the current obstacles and goal
         self.current_obstacles = obstacles
         self.current_goal = goal
+        self.current_goals = goals
 
         # apply the new obstacles and goal to the world
         self.apply_to_world(world)
@@ -104,11 +113,14 @@ class MapManager:
         with open(filename, "wb") as file:
             pickle.dump(self.current_obstacles, file)
             pickle.dump(self.current_goal, file)
+            pickle.dump(self.current_goals, file)
+
 
     def load_map(self, filename):
         with open(filename, "rb") as file:
             self.current_obstacles = pickle.load(file)
             self.current_goal = pickle.load(file)
+            self.current_goals = pickle.load(file)
 
     def apply_to_world(self, world):
         # add the current obstacles
@@ -118,3 +130,9 @@ class MapManager:
         # program the robot supervisors
         for robot in world.robots:
             robot.supervisor.goal = self.current_goal[:]
+            robot.supervisor.goals  = self.current_goals[:]
+
+
+
+
+

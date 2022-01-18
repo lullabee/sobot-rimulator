@@ -4,8 +4,8 @@ from models.polygon import Polygon
 from models.pose import Pose
 from models.proximity_sensor import ProximitySensor
 from models.wheel_encoder import WheelEncoder
-from robot_control.robot_supervisor_interface import RobotSupervisorInterface
-from robot_control.supervisor import Supervisor
+from fuzzy_control.robot_supervisor_interface import RobotSupervisorInterface
+from fuzzy_control.supervisor import Supervisor
 
 # Khepera III Properties
 K3_WHEEL_RADIUS = 0.021  # meters

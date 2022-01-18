@@ -32,6 +32,7 @@ class SupervisorView:
 
         # draw the goal to frame
         self._draw_goal_to_frame()
+        self._draw_goals_to_frame()
 
         # draw the supervisor-generated data to frame if indicated
         if self.viewer.show_invisibles:
@@ -49,6 +50,19 @@ class SupervisorView:
         self.viewer.current_frame.add_circle(
             pos=goal, radius=0.01, color="black", alpha=0.5
         )
+
+    def _draw_goals_to_frame(self):
+        for goal in self.supervisor.goals:
+
+            print(goal)
+            self.viewer.current_frame.add_circle(
+                pos=goal, radius=0.05, color="dark green", alpha=0.65
+            )
+            self.viewer.current_frame.add_circle(
+                pos=goal, radius=0.01, color="black", alpha=0.5
+            )
+
+        
 
     def _draw_robot_state_estimate_to_frame(self):
         # draw the estimated position of the robot
